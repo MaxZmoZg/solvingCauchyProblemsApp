@@ -30,10 +30,12 @@ namespace solvingCauchyProblemsApp
       
         private void Raschet_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(x0Text.Text) || string.IsNullOrWhiteSpace(yText.Text) || string.IsNullOrWhiteSpace(xnText.Text) || string.IsNullOrWhiteSpace(n1Text.Text))
+            if (string.IsNullOrWhiteSpace(x0Text.Text) || string.IsNullOrWhiteSpace(yText.Text) 
+                || string.IsNullOrWhiteSpace(xnText.Text) || string.IsNullOrWhiteSpace(n1Text.Text) || string.IsNullOrWhiteSpace(Ntext.Text))
             {
                 MessageBox.Show("Введите все значения для расчетов!", "Ошибка!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+
             else
             {
                
@@ -45,16 +47,17 @@ namespace solvingCauchyProblemsApp
                 int n2 = 2 * n1;
                 double shag1 = (xn - x0) / n1;
                 double shag2 = (xn - x0) / n2;
+                int N = int.Parse(Ntext.Text);
                 shagH1Read.Text = shag1.ToString();
                 shagH2Read.Text = shag2.ToString();
                 n2Read.Text = n2.ToString();
-                Eilera(x0, shag1, n1,y);
-                Runge(x0,shag2, n2,y);
-                Uluchshennii_metod_Eilera(x0, shag1, n1,y);
-                Runge_Kutte4(x0, shag1, n1,y);
+                Eilera(x0, shag1, n1,y,N);
+                Runge(x0,shag2, n2,y, N);
+                Uluchshennii_metod_Eilera(x0, shag1, n1,y, N);
+                Runge_Kutte4(x0, shag1, n1,y, N);
 
                 Brush brush = new SolidColorBrush(Color.FromRgb(187, 243, 154));
-                resultRungeText.Text = ((2* (Runge(x0, shag2, n2, y))) - (Eilera(x0, shag1, n1, y))).ToString();
+                resultRungeText.Text = ((2* (Runge(x0, shag2, n2, y, N))) - (Eilera(x0, shag1, n1, y, N))).ToString();
                 resultRungeText.Background = brush;
             }
             
@@ -63,7 +66,7 @@ namespace solvingCauchyProblemsApp
 
 
         //Явный метод Эйлера»
-        private double Eilera(double x0, double h1, int n1, double y)
+        private double Eilera(double x0, double h1, int n1, double y,int N)
         {
             int i;
             double y1;
@@ -75,8 +78,8 @@ namespace solvingCauchyProblemsApp
             resultEilera.ItemsSource = result;
             for (i = 0; i < n1; i++)
             {
-                y1 = yg + h1 * (Math.Cos(x) * yg + (yg/5));
-                
+               
+                y1 = yg + h1 * (x / N + 2 * yg * x * Math.Log(yg));
                 //Заполнение таблицы resultEilera данными
                 result.Add(new
                 {
@@ -97,7 +100,7 @@ namespace solvingCauchyProblemsApp
         }
 
         //Уточненное решение с помощью формулы Рунге
-        private double Runge(double x0, double h2, int n2,double y)
+        private double Runge(double x0, double h2, int n2,double y, int N)
         {
             int i;
             double y1;
@@ -110,7 +113,8 @@ namespace solvingCauchyProblemsApp
 
             for (i = 0; i < n2; i++)
             {
-                y1 = yg + h2 * (Math.Cos(x) * yg + (yg / 5));
+                y1 = yg + h2 * (x / N + 2 * yg * x * Math.Log(yg));
+                
                 //Заполнение таблицы resultRunge данными
                 result.Add(new
                 {
@@ -128,7 +132,7 @@ namespace solvingCauchyProblemsApp
              return s;
         }
         //Улучшенный метод Эйлера
-        private double Uluchshennii_metod_Eilera(double x0, double h1, int n1,double y)
+        private double Uluchshennii_metod_Eilera(double x0, double h1, int n1,double y,int N)
         {
             int i;
             double y1;
@@ -138,15 +142,14 @@ namespace solvingCauchyProblemsApp
             resultUlEilera.ItemsSource = result;
             x = x0;
             x2 = x + h1 / 2;
-            y2 = yg + (h1/2) * (Math.Cos(x) * yg + (yg / 5));
-           
-            
+            y2 = yg + (h1/2) * (x / N + 2 * yg * x * Math.Log(yg));
+
 
             for (i = 0; i < 2 * n1; i++)
             {
 
-               
-                y1 = yg + h1 * (Math.Cos(x2) * y2 + (y2 / 5));
+                y1 = yg + h1 * (x2 / N + 2 * y2 * x2 * Math.Log(y2));
+              
 
                 //Заполнение таблицы resultUlEilera данными
                 result.Add(new
@@ -168,7 +171,7 @@ namespace solvingCauchyProblemsApp
             return s;
         }
         //метод Рунге-Кутта 4 порядка
-        private double Runge_Kutte4(double x0,  double h1, int n1, double y)
+        private double Runge_Kutte4(double x0,  double h1, int n1, double y, int N)
         {
             double k1, k2, k3, k4;
             int i;
@@ -182,10 +185,10 @@ namespace solvingCauchyProblemsApp
 
             for (i = 0; i < n1; i++)
             {
-                k1 = h1 * (Math.Cos(x) * yg + (yg / 5));
-                k2 = h1 * ((Math.Cos(x) + (h1/2) )* (yg+(k1/2)) + ((yg+(k1/2)) / 5));
-                k3 = h1 * ((Math.Cos(x) + (h1 / 2)) * (yg + (k2/2)) + ((yg + (k2/2)) / 5));
-                k4 = h1 * ((Math.Cos(x) + h1) * (yg + k3) + ((yg + k3) / 5));
+                k1 =  h1 * (x / N + 2 * yg * x * Math.Log(yg));
+                k2 = h1 * ((x + (h1 / 2))/ N + 2 * (yg + (k1 / 2)) * (x + (h1 / 2)) * Math.Log((yg + (k1 / 2))));
+                k3 = h1 * ((x + (h1 / 2)) / N + 2 * (yg + (k2 / 2)) * (x + (h1 / 2)) * Math.Log((yg + (k2 / 2)))); ;
+                k4 = h1 * ((x + h1) / N + 2 * (yg + k3) * (x + h1) * Math.Log((yg + k3))); ;
                 y1 = yg + (k1 + 2 * k2 + 2 * k3 + k4) / 6;
                 
                 //Заполнение таблицы resultRungeKutt данными
@@ -258,6 +261,19 @@ namespace solvingCauchyProblemsApp
             else
             {
                 n1Text.Background = Brushes.White;
+            }
+        }
+
+        private void Ntext_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(Ntext.Text))
+            {
+                Ntext.Background = Brushes.Red;
+
+            }
+            else
+            {
+                Ntext.Background = Brushes.White;
             }
         }
     }

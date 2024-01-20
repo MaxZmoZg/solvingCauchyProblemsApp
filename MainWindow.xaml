@@ -177,6 +177,19 @@
                Margin="275,569,0,0"
                VerticalAlignment="Top"
                RenderTransformOrigin="0,0.579" />
+        <TextBox Name="Ntext"
+                 TextChanged="Ntext_TextChanged"
+                 HorizontalAlignment="Left"
+                 Margin="667,96,0,0"
+                 TextWrapping="Wrap"
+                 Text="10"
+                 VerticalAlignment="Top"
+                 Width="108" />
+        <Label Content="N"
+               HorizontalAlignment="Left"
+               Margin="667,63,0,0"
+               VerticalAlignment="Top"
+               RenderTransformOrigin="0.685,0.387" />
 
     </Grid>
 </Window>
