@@ -48,10 +48,14 @@ namespace solvingCauchyProblemsApp
                 shagH1Read.Text = shag1.ToString();
                 shagH2Read.Text = shag2.ToString();
                 n2Read.Text = n2.ToString();
-                Eilera(x0, shag1, n1);
-                Runge(x0,shag2, n2);
-                Uluchshennii_metod_Eilera(x0, shag1, n1);
-                Runge_Kutte4(x0, shag1, n1);
+                Eilera(x0, shag1, n1,y);
+                Runge(x0,shag2, n2,y);
+                Uluchshennii_metod_Eilera(x0, shag1, n1,y);
+                Runge_Kutte4(x0, shag1, n1,y);
+
+                Brush brush = new SolidColorBrush(Color.FromRgb(187, 243, 154));
+                resultRungeText.Text = ((2* (Runge(x0, shag2, n2, y))) - (Eilera(x0, shag1, n1, y))).ToString();
+                resultRungeText.Background = brush;
             }
             
 
@@ -59,31 +63,33 @@ namespace solvingCauchyProblemsApp
 
 
         //Явный метод Эйлера»
-        private double Eilera(double x0, double h1, int n1)
+        private double Eilera(double x0, double h1, int n1, double y)
         {
             int i;
-            double[] y1 = new double[100];
+            double y1;
             double s, x;
-
-            x = x0;
-            y1[0] = 1;
+            double yg = y;
+            x = x0; 
+           
             List<dynamic> result = new List<dynamic>();
             resultEilera.ItemsSource = result;
             for (i = 0; i < n1; i++)
             {
-                y1[i + 1] = y1[i] + h1 * (Math.Pow(2.71, x) * Math.Sin(y1[i]) + n1 * x);
-                x += h1;
+                y1 = yg + h1 * (Math.Cos(x) * yg + (yg/5));
+                
                 //Заполнение таблицы resultEilera данными
                 result.Add(new
                 {
                     Итерация = i.ToString("N0"),
                     x = x.ToString("N1"),
-                    y1 = y1[i + 1].ToString("N5"),
+                    yg = yg.ToString("N4"),
+                    y1 = y1.ToString("N5"),
                     
                 });
-
+                yg = y1;
+                x += h1;
             }
-            s = y1[i];
+            s = yg;
             Brush brush = new SolidColorBrush(Color.FromRgb(187, 243, 154));
             resultElleraText.Text = s.ToString();
             resultElleraText.Background = brush;
@@ -91,101 +97,111 @@ namespace solvingCauchyProblemsApp
         }
 
         //Уточненное решение с помощью формулы Рунге
-        private double Runge(double x0, double h2, int n2)
+        private double Runge(double x0, double h2, int n2,double y)
         {
             int i;
-            double[] y1 = new double[100];
+            double y1;
             double s, x;
+            double yg = y;
             List<dynamic> result = new List<dynamic>();
             resultRunge.ItemsSource = result;
             x = x0;
-            y1[0] = 1;
+            
 
             for (i = 0; i < n2; i++)
             {
-                y1[i + 1] = y1[i] + h2 * (Math.Pow(2.71, x) * Math.Sin(y1[i]) + n2 * x);
-                x += h2;
+                y1 = yg + h2 * (Math.Cos(x) * yg + (yg / 5));
                 //Заполнение таблицы resultRunge данными
                 result.Add(new
                 {
                     Итерация = i.ToString("N0"),
                     x = x.ToString("N2"),
-                    y1 = y1[i + 1].ToString("N5"),
+                    yg = yg.ToString("N4"),
+                    y1 = y1.ToString("N5"),
 
                 });
-
+                yg = y1;
+                x += h2;
             }
 
-            s = y1[i];
-            Brush brush = new SolidColorBrush(Color.FromRgb(187, 243, 154));
-            resultRungeText.Text = s.ToString();
-            resultRungeText.Background = brush;
-            return s;
+             s = yg;
+             return s;
         }
         //Улучшенный метод Эйлера
-        private double Uluchshennii_metod_Eilera(double x0, double h1, int n1)
+        private double Uluchshennii_metod_Eilera(double x0, double h1, int n1,double y)
         {
             int i;
-            double[] y1 = new double[100];
+            double y1;
             double s, x, y2, x2;
+            double yg = y;
             List<dynamic> result = new List<dynamic>();
             resultUlEilera.ItemsSource = result;
             x = x0;
-            y1[0] = 1;
-            y2 = y1[0] + (h1 / 2) * (Math.Pow(2.71, x0) * Math.Sin(y1[0]) + n1 * x0);
-            x2 = x0 + h1 / 2;
+            x2 = x + h1 / 2;
+            y2 = yg + (h1/2) * (Math.Cos(x) * yg + (yg / 5));
+           
+            
 
             for (i = 0; i < 2 * n1; i++)
             {
-                y1[i + 1] = y1[0] + h1 * ((Math.Pow(2.71, x) + x2) * (Math.Sin(y1[i]) + y2) + n1 * x);
-                x += h1;
+
+               
+                y1 = yg + h1 * (Math.Cos(x2) * y2 + (y2 / 5));
+
                 //Заполнение таблицы resultUlEilera данными
                 result.Add(new
                 {
                     Итерация = i.ToString("N0"),
                     x = x.ToString("N1"),
-                    y1 = y1[i + 1].ToString("N5"),
+                    yg = yg.ToString("N4"),
+                    y1 = y1.ToString("N5"),
 
                 });
+                yg = y1;
+                x += h1;
             }
                        
-            s = y1[i];
+            s = yg;
             Brush brush = new SolidColorBrush(Color.FromRgb(187, 243, 154));
             resultUlEileraText.Text = s.ToString();
             resultUlEileraText.Background = brush;
             return s;
         }
-
-        private double Runge_Kutte4(double x0,  double h1, int n1)
+        //метод Рунге-Кутта 4 порядка
+        private double Runge_Kutte4(double x0,  double h1, int n1, double y)
         {
             double k1, k2, k3, k4;
             int i;
-            double[] y1 = new double[100];
+            double y1;
             double s, x;
+            double yg = y;
             List<dynamic> result = new List<dynamic>();
             resultRungeKutt.ItemsSource = result;
             x = x0;
-            y1[0] = 1;
+            
 
             for (i = 0; i < n1; i++)
             {
-                k1 = h1 * (Math.Pow(2.71, x) * Math.Sin(y1[i]) + n1 * x);
-                k2 = h1 * ((Math.Pow(2.71, x) + h1 / 2) * (Math.Sin(y1[i]) + k1 / 2) + n1 * x);
-                k3 = h1 * ((Math.Pow(2.71, x) + h1) * (Math.Sin(y1[i]) + 2 * k2 - k1) + n1 * x);
-                k4 = h1 * (Math.Pow(2.71, x + h1) * Math.Sin(y1[i] + k3) + n1 * (x + h1));
-                y1[i + 1] = y1[i] + (k1 + 2 * k2 + 2 * k3 + k4) / 6;
-                x += h1;
+                k1 = h1 * (Math.Cos(x) * yg + (yg / 5));
+                k2 = h1 * ((Math.Cos(x) + (h1/2) )* (yg+(k1/2)) + ((yg+(k1/2)) / 5));
+                k3 = h1 * ((Math.Cos(x) + (h1 / 2)) * (yg + (k2/2)) + ((yg + (k2/2)) / 5));
+                k4 = h1 * ((Math.Cos(x) + h1) * (yg + k3) + ((yg + k3) / 5));
+                y1 = yg + (k1 + 2 * k2 + 2 * k3 + k4) / 6;
+                
                 //Заполнение таблицы resultRungeKutt данными
                 result.Add(new
                 {
                     Итерация = i.ToString("N0"),
                     x = x.ToString("N1"),
-                    y1 = y1[i + 1].ToString("N5"),
+                    yg = yg.ToString("N4"),
+                    y1 = y1.ToString("N5"),
 
                 });
+                yg = y1;
+                x += h1;
             }
 
-            s = y1[i];
+            s = yg;
             Brush brush = new SolidColorBrush(Color.FromRgb(187, 243, 154));
             resultRungeKuttText.Text = s.ToString();
             resultRungeKuttText.Background = brush;
